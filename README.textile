@@ -1,0 +1,16 @@
+h1. SnippetsSync
+
+This is an extension that lets you save your global variables and snippets as files, keeping them in-sync during the development. It should only be enabled as you develop (that is, on your dev server only, or turn it off when going in production).
+
+h2. Install
+
+* Download the "AddonBakery Libraries":https://github.com/bjornbjorn/AddonBakery-libraries package and put the "libraries" folder into system/expressionengine/third_party
+* Download snippetssync and unzip that into system/expressionengine/third_party as well
+* Navigate to Addons -> Extensions -> Enable SnippetsSync
+
+
+h2. How it works
+
+For this to work you need to have setup "Allow Templates to be Saved as Files?" and specified a basepath in Design -> Global Template Preferences. Then, start saving your snippets in a folder called "snippets" in your template directory, and your global variables in a folder called "global_variables" in your template directory. Do not give these files any endings (so a snippet named "global_footer" will be populated from the snippets/global_footer file.
+
+The extension will just dumbly sync everything on page load. So, keep it active during development only. No, this shouldn't be noticable slow - but if you'd like a "manual alternative" the code in this extension is basically gotten from the good old "devkit":http://www.bybjorn.com/344/ which has a snippets sync which works the same way except there is a button for you to hit to sync ;-)
