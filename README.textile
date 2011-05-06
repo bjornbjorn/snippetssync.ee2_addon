@@ -5,7 +5,7 @@ This is an extension that lets you save your global variables and snippets as fi
 h2. Install
 
 * Download the "AddonBakery Libraries":https://github.com/bjornbjorn/AddonBakery-libraries package and put the "libraries" folder into system/expressionengine/third_party
-* Download snippetssync and unzip that into system/expressionengine/third_party as well
+* Download "snippetssync":https://github.com/bjornbjorn/snippetssync.ee2_addon/archives/master and unzip that into system/expressionengine/third_party as well
 * Navigate to Addons -> Extensions -> Enable SnippetsSync
 
 
