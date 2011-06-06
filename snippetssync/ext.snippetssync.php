@@ -15,8 +15,8 @@ class Snippetssync_ext extends Ab_ExtBase {
 
     public $settings        = array();
 
-    public $name            = 'SnippetsSync (only keep enabled during development)';
-    public $version         = '1.0.0';
+    public $name            = 'SnippetsSync';
+    public $version         = '1.0.1';
     public $description     = 'Enables you to work with snippets & global variables as files while developing';
     public $settings_exist  = 'n';
     public $docs_url        = 'http://ee.bybjorn.com/snippetssync';
@@ -54,8 +54,12 @@ class Snippetssync_ext extends Ab_ExtBase {
 
     public function on_sessions_start($ref)
     {
-        $this->EE->load->library('snippetslib');
-        $success = $this->EE->snippetslib->sync_all();
+        $this->EE->load->config('snippetssync');
+        if(!$this->EE->config->item('snippetssync_production_mode'))
+        {
+            $this->EE->load->library('snippetslib');
+            $success = $this->EE->snippetslib->sync_all();
+        }
     }
 
 }
