@@ -1,5 +1,5 @@
 <p>
-    <?php
+    <?
     if($production_mode)
     {?>
             SnippetsSync is currently in production mode. Snippets are only synced when you click the button below.
