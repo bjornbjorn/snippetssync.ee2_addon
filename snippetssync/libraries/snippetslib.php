@@ -88,16 +88,28 @@ class Snippetslib extends Ab_LibBase {
 
 			$global_variables = $this->get_files($this->gv_path);
 			$snippets = $this->get_files($this->sn_path);
+			
+			// regex arrays, used to create valid snippet and global variable names.
+			$search = array(
+				"/\..*$/ui", //strips extension.
+				"/([^a-zA-Z0-9\-\_]+)/i", // remove illegal chars
+				"/(^[\.\-\_]*|[\.\-\_]*$)/i"
+			);
+			$replace= array(
+				"", // replace extension with nothing
+				"_", // replace illegal chars with an underscore
+				"" // if we end up with a special char at the end or beginning of the name remove this char.
+			);
 
 			foreach($global_variables as $global_variable_filename)
 			{
-				$global_variable_name = str_replace('.html', '', $global_variable_filename);
-
+				$global_variable_name = preg_replace( $search , $replace , $global_variable_filename );
+				
 				$this->EE->db->where('variable_name', $global_variable_name);
 				$this->EE->db->from('global_variables');
 				
 				$global_variable_data = file_get_contents($this->gv_path.$global_variable_filename);
-
+				
 				if($this->EE->db->count_all_results() == 0)
 				{
 					$this->EE->db->insert('global_variables', array(
@@ -110,13 +122,13 @@ class Snippetslib extends Ab_LibBase {
 					$this->EE->db->where('variable_name', $global_variable_name);
 					$this->EE->db->update('global_variables', array('variable_data' => $global_variable_data));
 				}
-
+				
 				$this->last_sync_log['globals'][] = $global_variable_name;
 			}
 
 			foreach($snippets as $snippet_filename)
 			{
-				$snippet_name = str_replace('.html', '', $snippet_filename);
+				$snippet_name = preg_replace( $search , $replace , $snippet_filename );
 
 				$this->EE->db->where('snippet_name', $snippet_name);
 				$this->EE->db->from('snippets');
