@@ -151,6 +151,67 @@ class Snippetslib extends Ab_LibBase {
 				$this->last_sync_log['snippets'][] = $snippet_name;
 			}
 			
+			/*
+				DELETE FILES WHEN USER HAS MANUALLY DELETED A SNIPPET FROM THE DB.
+			*/
+			// if ( isset($_REQUEST['M']) && $_REQUEST['M'] == "snippets_delete" && isset($_REQUEST['delete_confirm']) && $_REQUEST['delete_confirm'] )
+			// {
+			// 	// remove files from snippets and global vars that have been deleted in the DB.
+			// 	
+			// 	// select all available snippet_names from DB
+			// 	$results = $this->EE->db->query("SELECT snippet_name FROM exp_snippets");
+			// 	if ( $results->num_rows() > 0 )
+			// 	{
+			// 		foreach ($results->result_array() as $key => $value) {
+			// 			$snippets_db[] = $value['snippet_name'];
+			// 		}
+			// 	} else {
+			// 		$snippets_db = array();
+			// 	}
+			// 
+			// 	// select all available global_variables from DB
+			// 	$results = $this->EE->db->query("SELECT variable_name FROM exp_global_variables");
+			// 	if ( $results->num_rows() > 0 )
+			// 	{
+			// 		foreach ($results->result_array() as $key => $value) {
+			// 			$global_variables_db[] = $value['variable_name'];
+			// 		}
+			// 	} else {
+			// 		$global_variables_db = array();
+			// 	}
+			// 
+			// 	foreach ($snippets as $snippet_filename) {
+			// 
+			// 		$snippet_name = str_replace('.html', '', $snippet_filename);
+			// 		$snippet_path = $this->sn_path.$snippet_filename;
+			// 		$snippet_octal = substr(sprintf('%o', fileperms( $snippet_path )), -4);
+			// 
+			// 		if ( !in_array( $snippet_name , $snippets_db ) && $snippet_octal > FILE_READ_MODE )
+			// 		{
+			// 			// we have not found a matching snippet in the DB to this filename, remove the source file.
+			// 			unlink( $this->sn_path.$snippet_filename );
+			// 		} 
+			// 	}
+			// 	foreach ($global_variables as $global_variable_filename) {
+			// 
+			// 		$global_variable_name = str_replace('.html', '', $global_variable_filename);
+			// 		$global_variable_path = $this->gv_path.$global_variable_filename;
+			// 		$global_variable_octal = substr(sprintf('%o', fileperms( $global_variable_path )), -4);
+			// 
+			// 		if ( !in_array( $global_variable_name , $global_variables_db ) && $global_variable_octal > FILE_READ_MODE )
+			// 		{
+			// 			// we have not found a matching global variable in the DB to this filename, remove the source file.
+			// 			unlink( $this->gv_path.$global_variable_filename );
+			// 		} 
+			// 	}
+			// 	
+			// 	// since we altered the directory content let's reset these vars.
+			// 	$snippets = $this->get_files($this->sn_path);
+			// 	$global_variables = $this->get_files($this->gv_path);
+			// 	
+			// }
+			
+			
 			return TRUE;
 
 		}
