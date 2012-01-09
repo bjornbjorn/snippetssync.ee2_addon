@@ -16,7 +16,7 @@ class Snippetssync_ext extends Ab_ExtBase {
     public $settings        = array();
 
     public $name            = 'SnippetsSync';
-    public $version         = '1.0.2';
+    public $version         = '1.0.3';
     public $description     = 'Enables you to work with snippets & global variables as files while developing';
     public $settings_exist  = 'n';
     public $docs_url        = 'http://ee.bybjorn.com/snippetssync';

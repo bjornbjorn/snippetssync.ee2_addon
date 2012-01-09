@@ -13,7 +13,7 @@
  */
 class Snippetssync_upd {
 		
-	var $version        = '1.0.2';
+	var $version        = '1.0.3';
 	var $module_name = "Snippetssync";
 	
     function Snippetssync_upd( $switch = TRUE ) 
@@ -77,7 +77,7 @@ class Snippetssync_upd {
 	
 	function update($current = '')
 	{
-		return FALSE;
+		return TRUE;
 	}
 
     /** @return Devkit_code_completion_helper */ function EE() {if(!isset($this->EE)){$this->EE =& get_instance();}return $this->EE;}    
