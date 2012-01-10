@@ -109,63 +109,71 @@ class Snippetslib extends Ab_LibBase {
 			);
 			
 			/*
-				DELETE FILES WHEN USER HAS MANUALLY DELETED A SNIPPET FROM THE DB VIA THE ADMIN OR STRAIGHT IN THE DB.
-				The idea here is to get an array of all snippets and global vars FROM THE DB then we compare the filesystem names to the array of names from the DB.
-				Those that are not a match point towards orphaned files which should then be deleted.
+				Delete files if the user has deleted a snippet or global var via the control panel.
 			*/
-			if ( $this->enable_auto_delete && (isset($_REQUEST['M']) && $_REQUEST['M'] == "snippets_delete") && (isset($_REQUEST['delete_confirm']) && $_REQUEST['delete_confirm']) )
+			if ( 
+				$this->enable_auto_delete 
+				&& ( isset($_REQUEST['M']) && ( $_REQUEST['M'] == "snippets_delete" || $_REQUEST['M'] == "global_variables_delete" ) ) // check if we're following a delete request
+				&& ( isset($_REQUEST['delete_confirm']) && $_REQUEST['delete_confirm'] ) // and it has been confirmed by the user
+				&& ( isset($_POST['snippet_id']) || isset($_POST['variable_id']) ) // make sure we've also got the id information correlating to the DB row of the file to delete.
+			)
 			{
-				// remove files from snippets and global vars that have been deleted in the DB.
 				
-				// select all available snippet_names from DB
-				$results = $this->EE->db->query("SELECT snippet_name FROM exp_snippets");
-				if ( $results->num_rows() > 0 )
+				// Get the specific snippet or global var we're deleting via the id submitted in the $_POST array.
+				
+				if ( isset($_REQUEST['M']) && $_REQUEST['M'] == "snippets_delete" )
 				{
-					foreach ($results->result_array() as $key => $row) {
-						$snippets_db[] = $row['snippet_name'];
-					}
-				} else {
-					$snippets_db = array();
+					$fileset = $snippets;
+					$deletion_id = $_POST['snippet_id'];
+					$sql = "SELECT snippet_name FROM exp_snippets WHERE snippet_id = '$deletion_id'";
+					$db_col_name = "snippet_name";
+					$dir_path = $this->sn_path;
 				}
-			
-				// select all available global_variables from DB
-				$results = $this->EE->db->query("SELECT variable_name FROM exp_global_variables");
-				if ( $results->num_rows() > 0 )
+				else if ( isset($_REQUEST['M']) && $_REQUEST['M'] == "global_variables_delete" )
 				{
-					foreach ($results->result_array() as $key => $row) {
-						$global_variables_db[] = $row['variable_name'];
-					}
-				} else {
-					$global_variables_db = array();
-				}
-			
-				foreach ($snippets as $snippet_filename) {
-			
-					$snippet_name = preg_replace( $search , $replace , $snippet_filename );
-					$snippet_path = $this->sn_path.$snippet_filename;
-					$snippet_octal = substr(sprintf('%o', fileperms( $snippet_path )), -4);
-			
-					if ( !in_array( $snippet_name , $snippets_db ) && $snippet_octal > FILE_READ_MODE )
-					{
-						// we have not found a matching snippet in the DB to this filename, remove the source file.
-						unlink( $this->sn_path.$snippet_filename );
-					} 
-				}
-				foreach ($global_variables as $global_variable_filename) {
-			
-					$global_variable_name = preg_replace( $search , $replace , $global_variable_filename);
-					$global_variable_path = $this->gv_path.$global_variable_filename;
-					$global_variable_octal = substr(sprintf('%o', fileperms( $global_variable_path )), -4);
-			
-					if ( !in_array( $global_variable_name , $global_variables_db ) && $global_variable_octal > FILE_READ_MODE )
-					{
-						// we have not found a matching global variable in the DB to this filename, remove the source file.
-						unlink( $this->gv_path.$global_variable_filename );
-					} 
+					$fileset = $global_variables;
+					$deletion_id = $_POST['variable_id'];
+					$sql = "SELECT variable_name FROM exp_global_variables WHERE variable_id = '$deletion_id'";
+					$db_col_name = "variable_name";
+					$dir_path = $this->gv_path;
 				}
 				
-				// since we altered the directory content let's reset these vars for a fresh set of arrays.
-				$snippets = $this->get_files($this->sn_path);
+				if ( !! $deletion_id )
+				{
+					foreach ($fileset as $filename)
+					{
+						
+						$lookup_array_originals[] = $filename;
+						$lookup_array_clean[] = preg_replace( $search , $replace , $filename );
+						
+					}
+					
+					$result = $this->EE->db->query( $sql );
+
+					if ( $result->num_rows() == 1 )
+					{
+
+						$deletion_name = $result->result_array();
+						$deletion_name = $deletion_name[0]["$db_col_name"];
+
+						if ( (isset( $lookup_array_clean ) && is_array( $lookup_array_clean )) && in_array( $deletion_name , $lookup_array_clean ) )
+						{
+
+							$key = array_search( $deletion_name , $lookup_array_clean );
+							$file = $dir_path.$lookup_array_originals[$key];
+
+							if ( file_exists( $file ) && substr(sprintf('%o', fileperms($file)), -4 ) >= FILE_WRITE_MODE )
+							{
+								// the file exists and we have permissions to delete it.
+								unlink( $file );
+							}
+						}
+						
+					}
+				}
+				
+				// since we modified the directory contents we'll refresh the filesets for use later in the script.
+ 				$snippets = $this->get_files($this->sn_path);
 				$global_variables = $this->get_files($this->gv_path);
 			}
 
