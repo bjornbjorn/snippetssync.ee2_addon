@@ -35,11 +35,7 @@ class Snippetssync_upd {
 		);
 
 		$this->EE->db->insert('modules', $data);		
-		
-		//
-		// Add additional stuff needed on module install here
-		// 
-																									
+
 		return TRUE;
 	}
 
@@ -74,10 +70,27 @@ class Snippetssync_upd {
 	 * @param $current current version number
 	 * @return boolean indicating whether or not the module was updated 
 	 */
-	
-	function update($current = '')
-	{
-		return TRUE;
+
+      public function update($current = '')
+      {
+          if ($current == $this->version)
+          {
+              return FALSE;
+          }
+
+          if ($current < '1.0.4')
+          {
+                $this->EE->db->insert('extensions',array(
+                                    'class'        =>  $this->module_name,
+                                    'method'       => 'on_cp_js_end',
+                                    'hook'         => 'cp_js_end',
+                                    'settings'     => "",
+                                    'priority'     => 10,
+                                    'version'      => $this->version,
+                                    'enabled'      => "y"
+                    )
+                );
+          }
 	}
 
     /** @return Devkit_code_completion_helper */ function EE() {if(!isset($this->EE)){$this->EE =& get_instance();}return $this->EE;}    

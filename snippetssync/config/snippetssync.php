@@ -7,3 +7,9 @@
  * in adodns-> modules -> snippetssync you can click to do a manual sync.
  */
 $config['snippetssync_production_mode'] = FALSE;
+
+/**
+ * Disable this if you do not want the corresponding file to be deleted from the
+ * filesystem when you delete a snippet/global variable from the CP.
+ */
+$config['snippetssync_enable_auto_delete'] = TRUE;

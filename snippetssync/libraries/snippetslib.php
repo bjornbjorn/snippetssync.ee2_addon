@@ -20,8 +20,6 @@ class Snippetslib extends Ab_LibBase {
 	private $gv_path = '';
 	private $tmpl_basepath = '';
 	
-	private $enable_auto_delete = FALSE;
-
 	public function __construct() {
 		
 		parent::__construct();
@@ -30,12 +28,16 @@ class Snippetslib extends Ab_LibBase {
 		$this->tmpl_basepath = $this->EE->config->slash_item('tmpl_file_basepath') . $this->EE->config->slash_item('site_short_name');
 		$this->sn_path = $this->tmpl_basepath . ( $this->EE->config->slash_item('snippetssync_sn_folder') ? $this->EE->config->slash_item('snippetssync_sn_folder') : "snippets/" );
 		$this->gv_path = $this->tmpl_basepath . ( $this->EE->config->slash_item('snippetssync_gv_folder') ? $this->EE->config->slash_item('snippetssync_gv_folder') : "global_variables/" );
-
-		// Set auto delete of orphaned files to TRUE is set specifically via the site $config
-		if ( $this->EE->config->slash_item('snippetssync_enable_auto_delete') ) {
-			$this->enable_auto_delete = TRUE;
-		}
 	}
+
+    public function is_auto_delete_enabled()
+    {
+        if(isset($this->EE->config->config['snippetssync_enable_auto_delete_override'])) {
+            return $this->EE->config->item('snippetssync_enable_auto_delete_override');
+        } else {
+            return $this->EE->config->item('snippetssync_enable_auto_delete');
+        }
+    }
 
 	public function verify_settings()
 	{
@@ -112,7 +114,7 @@ class Snippetslib extends Ab_LibBase {
 				Delete files if the user has deleted a snippet or global var via the control panel.
 			*/
 			if ( 
-				$this->enable_auto_delete 
+				$this->is_auto_delete_enabled()
 				&& ( isset($_REQUEST['M']) && ( $_REQUEST['M'] == "snippets_delete" || $_REQUEST['M'] == "global_variables_delete" ) ) // check if we're following a delete request
 				&& ( isset($_REQUEST['delete_confirm']) && $_REQUEST['delete_confirm'] ) // and it has been confirmed by the user
 				&& ( isset($_POST['snippet_id']) || isset($_POST['variable_id']) ) // make sure we've also got the id information correlating to the DB row of the file to delete.

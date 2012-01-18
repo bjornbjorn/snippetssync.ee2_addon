@@ -23,6 +23,7 @@ class Snippetssync_ext extends Ab_ExtBase {
 
     protected $register_hooks = array(
 			'sessions_start' => 'on_sessions_start',
+            'cp_js_end' => 'on_cp_js_end',
     );
 
     /**
@@ -51,6 +52,40 @@ class Snippetssync_ext extends Ab_ExtBase {
 	//
 	// HOOKS GO HERE
 	//
+
+    public function on_cp_js_end()
+    {
+        $this->EE->load->library('snippetslib');
+
+        $out_js = '';
+
+        if($this->EE->snippetslib->is_auto_delete_enabled()) {
+
+            $out_js = '
+
+            if(window.location.href.indexOf("M=snippets") > 0) {
+                $("a[href*=\'snippets_delete\']").click(function(e) {
+
+                    if(confirm("Snippet is managed by SnippetsSync and deleting it will delete the corresponding file on the filesystem. Is that what you want to do?")) {
+                        return true;
+                    }
+
+                    return false;
+                });
+            } else if(window.location.href.indexOf("M=global_variables") > 0) {
+                $("a[href*=\'global_variables_delete\']").click(function(e) {
+
+                    if(confirm("This Global Variable is managed by SnippetsSync and deleting it will delete the corresponding file on the filesystem. Is that what you want to do?")) {
+                        return true;
+                    }
+
+                    return false;
+                });
+            }';
+        }
+
+        return $this->EE->extensions->last_call.$out_js;
+    }
 
     public function on_sessions_start($ref)
     {
