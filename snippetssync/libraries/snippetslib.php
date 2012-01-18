@@ -19,6 +19,8 @@ class Snippetslib extends Ab_LibBase {
 	private $sn_path = '';
 	private $gv_path = '';
 	private $tmpl_basepath = '';
+	
+	private $enable_auto_delete = FALSE;
 
 	public function __construct() {
 		
@@ -28,6 +30,11 @@ class Snippetslib extends Ab_LibBase {
 		$this->tmpl_basepath = $this->EE->config->slash_item('tmpl_file_basepath') . $this->EE->config->slash_item('site_short_name');
 		$this->sn_path = $this->tmpl_basepath . ( $this->EE->config->slash_item('snippetssync_sn_folder') ? $this->EE->config->slash_item('snippetssync_sn_folder') : "snippets/" );
 		$this->gv_path = $this->tmpl_basepath . ( $this->EE->config->slash_item('snippetssync_gv_folder') ? $this->EE->config->slash_item('snippetssync_gv_folder') : "global_variables/" );
+
+		// Set auto delete of orphaned files to TRUE is set specifically via the site $config
+		if ( $this->EE->config->slash_item('snippetssync_enable_auto_delete') ) {
+			$this->enable_auto_delete = TRUE;
+		}
 	}
 
 	public function verify_settings()
@@ -100,7 +107,79 @@ class Snippetslib extends Ab_LibBase {
 				"_", // replace illegal chars with an underscore
 				"" // if we end up with a special char at the end or beginning of the name remove this char.
 			);
+			
+			/*
+				Delete files if the user has deleted a snippet or global var via the control panel.
+			*/
+			if ( 
+				$this->enable_auto_delete 
+				&& ( isset($_REQUEST['M']) && ( $_REQUEST['M'] == "snippets_delete" || $_REQUEST['M'] == "global_variables_delete" ) ) // check if we're following a delete request
+				&& ( isset($_REQUEST['delete_confirm']) && $_REQUEST['delete_confirm'] ) // and it has been confirmed by the user
+				&& ( isset($_POST['snippet_id']) || isset($_POST['variable_id']) ) // make sure we've also got the id information correlating to the DB row of the file to delete.
+			)
+			{
+				
+				// Get the specific snippet or global var we're deleting via the id submitted in the $_POST array.
+				
+				if ( isset($_REQUEST['M']) && $_REQUEST['M'] == "snippets_delete" )
+				{
+					$fileset = $snippets;
+					$deletion_id = $_POST['snippet_id'];
+					$sql = "SELECT snippet_name FROM exp_snippets WHERE snippet_id = '$deletion_id'";
+					$db_col_name = "snippet_name";
+					$dir_path = $this->sn_path;
+				}
+				else if ( isset($_REQUEST['M']) && $_REQUEST['M'] == "global_variables_delete" )
+				{
+					$fileset = $global_variables;
+					$deletion_id = $_POST['variable_id'];
+					$sql = "SELECT variable_name FROM exp_global_variables WHERE variable_id = '$deletion_id'";
+					$db_col_name = "variable_name";
+					$dir_path = $this->gv_path;
+				}
+				
+				if ( !! $deletion_id )
+				{
+					foreach ($fileset as $filename)
+					{
+						
+						$lookup_array_originals[] = $filename;
+						$lookup_array_clean[] = preg_replace( $search , $replace , $filename );
+						
+					}
+					
+					$result = $this->EE->db->query( $sql );
 
+					if ( $result->num_rows() == 1 )
+					{
+
+						$deletion_name = $result->result_array();
+						$deletion_name = $deletion_name[0]["$db_col_name"];
+
+						if ( (isset( $lookup_array_clean ) && is_array( $lookup_array_clean )) && in_array( $deletion_name , $lookup_array_clean ) )
+						{
+
+							$key = array_search( $deletion_name , $lookup_array_clean );
+							$file = $dir_path.$lookup_array_originals[$key];
+
+							if ( file_exists( $file ) && substr(sprintf('%o', fileperms($file)), -4 ) >= FILE_WRITE_MODE )
+							{
+								// the file exists and we have permissions to delete it.
+								unlink( $file );
+							}
+						}
+						
+					}
+				}
+				
+				// since we modified the directory contents we'll refresh the filesets for use later in the script.
+ 				$snippets = $this->get_files($this->sn_path);
+				$global_variables = $this->get_files($this->gv_path);
+			}
+
+			/*
+				Write or Update DB with content from files.
+			*/
 			foreach($global_variables as $global_variable_filename)
 			{
 				$global_variable_name = preg_replace( $search , $replace , $global_variable_filename );
