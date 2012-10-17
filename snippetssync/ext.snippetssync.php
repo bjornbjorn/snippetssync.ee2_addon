@@ -1,6 +1,8 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-require_once PATH_THIRD.'libraries/ab/ab_extbase'.EXT;
+if(!class_exists('Ab_ExtBase')) {
+    require_once PATH_THIRD.'libraries/ab/ab_extbase'.EXT;
+}
 
 /**
  * SnippetsSync
