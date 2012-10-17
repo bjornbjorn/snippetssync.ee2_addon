@@ -30,7 +30,7 @@ class Snippetssync_mcp
 	public function index()
 	{
 		$vars = array(
-            'production_mode' => $this->EE->config->item('snippetssync_production_mode'),
+            'production_mode' => $this->EE->config->item('snippetssync_production_mode_override') || $this->EE->config->item('snippetssync_production_mode'),
         );
 		return $this->content_wrapper('index', 'snippetssync_welcome', $vars);
 	}
