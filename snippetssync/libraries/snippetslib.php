@@ -82,6 +82,7 @@ class Snippetslib extends Ab_LibBase {
 	{
 		$this->last_sync_log['globals'] = array();
 		$this->last_sync_log['snippets'] = array();
+        $this->last_sync_log['ignored'] = array();
 
 		if($this->verify_settings())
 		{
@@ -92,73 +93,91 @@ class Snippetslib extends Ab_LibBase {
 			// regex arrays, used to create valid snippet and global variable names.
 			$search = array(
 				"/\..*$/ui", //strips extension.
-				"/([^a-zA-Z0-9\-\_]+)/i", // remove illegal chars
-				"/(^[\.\-\_]*|[\.\-\_]*$)/i"
 			);
 			$replace= array(
 				"", // replace extension with nothing
-				"_", // replace illegal chars with an underscore
-				"" // if we end up with a special char at the end or beginning of the name remove this char.
 			);
 
 			foreach($global_variables as $global_variable_filename)
 			{
 				$global_variable_name = preg_replace( $search , $replace , $global_variable_filename );
-				
-				$this->EE->db->where('variable_name', $global_variable_name);
-				$this->EE->db->from('global_variables');
-				
-				$global_variable_data = file_get_contents($this->gv_path.$global_variable_filename);
-				
-				if($this->EE->db->count_all_results() == 0)
-				{
-					$this->EE->db->insert('global_variables', array(
-						'variable_name' => $global_variable_name,
-						'variable_data' => $global_variable_data,
-					));
-				}
-				else
-				{
-					$this->EE->db->where('variable_name', $global_variable_name);
-					$this->EE->db->update('global_variables', array('variable_data' => $global_variable_data));
-				}
-				
-				$this->last_sync_log['globals'][] = $global_variable_name;
+
+                if($this->is_legal_global_var_name($global_variable_filename)) {
+                    $this->EE->db->where('variable_name', $global_variable_name);
+                    $this->EE->db->from('global_variables');
+
+                    $global_variable_data = file_get_contents($this->gv_path.$global_variable_filename);
+
+                    if($this->EE->db->count_all_results() == 0)
+                    {
+                        $this->EE->db->insert('global_variables', array(
+                            'variable_name' => $global_variable_name,
+                            'variable_data' => $global_variable_data,
+                        ));
+                    }
+                    else
+                    {
+                        $this->EE->db->where('variable_name', $global_variable_name);
+                        $this->EE->db->update('global_variables', array('variable_data' => $global_variable_data));
+                    }
+
+                    $this->last_sync_log['globals'][] = $global_variable_name;
+                } else {
+                    $this->last_sync_log['ignored'][] = '/global_variables/'.$global_variable_filename;
+                }
 			}
 
 			foreach($snippets as $snippet_filename)
 			{
 				$snippet_name = preg_replace( $search , $replace , $snippet_filename );
 
-				$this->EE->db->where('snippet_name', $snippet_name);
-				$this->EE->db->from('snippets');
-				$snippet_data = file_get_contents($this->sn_path.$snippet_filename);
+                if($this->is_legal_global_var_name($snippet_name)) {
+                    $this->EE->db->where('snippet_name', $snippet_name);
+                    $this->EE->db->from('snippets');
+                    $snippet_data = file_get_contents($this->sn_path.$snippet_filename);
 
-				if($this->EE->db->count_all_results() == 0)
-				{
-					$this->EE->db->insert('snippets', array(
-						'snippet_name' => $snippet_name,
-						'snippet_contents' => $snippet_data,
-					));
+                    if($this->EE->db->count_all_results() == 0)
+                    {
+                        $this->EE->db->insert('snippets', array(
+                            'snippet_name' => $snippet_name,
+                            'snippet_contents' => $snippet_data,
+                        ));
 
-				}
-				else
-				{
-					$this->EE->db->where('snippet_name', $snippet_name);
-					$this->EE->db->update('snippets', array('snippet_contents' => $snippet_data));
-				}
+                    }
+                    else
+                    {
+                        $this->EE->db->where('snippet_name', $snippet_name);
+                        $this->EE->db->update('snippets', array('snippet_contents' => $snippet_data));
+                    }
 
-				$this->last_sync_log['snippets'][] = $snippet_name;
+                    $this->last_sync_log['snippets'][] = $snippet_name;
+
+                } else {
+                    $this->last_sync_log['ignored'][] = '/snippets/'.$snippet_filename;
+                }
+
 			}
-			
-			return TRUE;
 
+			return TRUE;
 		}
 		else
 		{
 			return FALSE;
 		}
 	}
+
+    /**
+     * Check if a string is a legal global var name
+     *
+     * @param $str
+     */
+    private function is_legal_global_var_name($str)
+    {
+        if($str == '') {
+            return FALSE;
+        }
+        return (preg_match("#^[a-zA-Z0-9_\-/]+$#i", $str));
+    }
 
 
 	/**
@@ -178,7 +197,7 @@ class Snippetslib extends Ab_LibBase {
 			{
 				if (is_file($source_dir.$file))
 				{
-					$files[] = $file;
+                    $files[] = $file;
 				}
 			}
 			closedir($fp);

@@ -52,6 +52,8 @@ class Snippetssync_mcp
             'snippets' => $snippets,
             'global_variables_count' => count($global_variables),
             'snippets_count' => count($snippets),
+            'ignored_count' => isset($this->EE->snippetslib->last_sync_log['ignored']) ? count($this->EE->snippetslib->last_sync_log['ignored']) : 0,
+            'ignored' => isset($this->EE->snippetslib->last_sync_log['ignored']) ? $this->EE->snippetslib->last_sync_log['ignored'] : FALSE,
         );
 
         return $this->content_wrapper('synced', 'snippetssync_synced', $vars);

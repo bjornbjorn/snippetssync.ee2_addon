@@ -8,7 +8,7 @@ if(!$success)
 }
 
 
-if(count($global_variables))
+if($global_variables_count > 0)
 {
     ?>
     <h2><?php echo $global_variables_count; ?> Global Variables Synced</h2>
@@ -26,7 +26,7 @@ if(count($global_variables))
     <?php
 }
 
-if(count($snippets))
+if($snippets_count > 0)
 {
     ?>
     <h2><?php echo $snippets_count; ?> Snippets Synced</h2>
@@ -41,6 +41,25 @@ if(count($snippets))
 ?>
     </ul></p>
     <?php
+}
+
+
+if($ignored_count > 0) {
+    ?>
+<h2 style="color:orange"><?php echo $ignored_count; ?> Files Ignored</h2>
+<p>These files were ignored because their filename is not a legal snippet/global variable name (may only contain alpha-numeric characters, underscores, and dashes)</p>
+<p><ul>
+    <?php
+
+    foreach($ignored as $ignored_file)
+    {
+        ?>
+        <li><?php echo $ignored_file; ?></li>
+        <?php
+    }
+    ?>
+</ul></p>
+<?php
 }
 ?>
 <br/>
