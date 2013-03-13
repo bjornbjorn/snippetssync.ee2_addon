@@ -2,4 +2,4 @@ h1. SnippetsSync
 
 This is an extension that lets you save your global variables and snippets as files, keeping them in-sync during the development. It should only be enabled as you develop (that is, on your dev server only, or turn it off when going in production).
 
-Read more about it here: "SnippetsSync for ExpressionEngine":http://www.addonbakery.com/expressionengine-addons/snippetssync.html
+Read more about it here: "SnippetsSync for ExpressionEngine":http://wedoaddons.com/addon/snippetssync
