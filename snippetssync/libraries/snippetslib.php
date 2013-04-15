@@ -102,7 +102,7 @@ class Snippetslib extends Ab_LibBase {
 			{
 				$global_variable_name = preg_replace( $search , $replace , $global_variable_filename );
 
-                if($this->is_legal_global_var_name($global_variable_filename)) {
+                if($this->is_legal_global_var_name($global_variable_name)) {
                     $this->EE->db->where('variable_name', $global_variable_name);
                     $this->EE->db->from('global_variables');
 

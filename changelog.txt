@@ -2,6 +2,10 @@ Changelog for SnippetsSync
 ==========================
 The dates in this changelog use international date format: YYYY-MM-DD (ISO8601)
 
+1.0.6 - 2013-04-15
+------------------
+* Fixed bug where global variables were not allowed to be saved w/.html extension
+
 1.0.5 - 2013-01-29
 ------------------
 * SnippetsSync will now ignore invalid filenames instead of converting them to valid global variable/snipppet names. A manual sync in the CP will list the files that are ignored.
