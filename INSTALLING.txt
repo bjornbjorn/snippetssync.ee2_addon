@@ -1,6 +1,6 @@
 How to install
 ==============
-* Copy both the "libraries" and the "snippetssync" folder into /expressionengine/third_party/
+* Copy both the "/system/expressionengine/third_party/libraries/" and the "/system/expressionengine/third_party/snippetssync/" folders into /system/expressionengine/third_party/
 * Navigate to Addons -> Extensions -> Enable SnippetsSync
 
 That's it.

@@ -2,6 +2,10 @@ Changelog for SnippetsSync
 ==========================
 The dates in this changelog use international date format: YYYY-MM-DD (ISO8601)
 
+1.0.7 - 2013-05-20
+------------------
+* Modified add-on folder structure for DevDemon Updater compatibility
+
 1.0.6 - 2013-04-15
 ------------------
 * Fixed bug where global variables were not allowed to be saved w/.html extension
