@@ -42,7 +42,11 @@ class Snippetssync_mcp
         $global_variables = $this->EE->snippetslib->last_sync_log['globals'];
         $snippets = $this->EE->snippetslib->last_sync_log['snippets'];
 
-        $sync_time = $this->EE->localize->set_human_time('', TRUE, TRUE);   // #eecms - the cms where get functions are prefixed with set! :-p
+        if (version_compare(APP_VER, '2.6', '>=')) {
+            $sync_time =  $this->EE->localize->human_time(NULL, TRUE, TRUE);
+        } else {
+            $sync_time = $this->EE->localize->set_human_time('', TRUE, TRUE);   // #eecms - the cms where get functions are prefixed with set! :-p
+        }
 
         $vars = array(
             'success' => $success,
@@ -64,7 +68,14 @@ class Snippetssync_mcp
 		$vars['content_view'] = $content_view;
 		$vars['_base'] = $this->base;
 		$vars['_form_base'] = $this->form_base;
-		$this->EE->cp->set_variable('cp_page_title', lang($lang_key));
+
+        // $this->EE->cp->set_variable was deprecated in 2.6
+        if (version_compare(APP_VER, '2.6', '>=')) {
+            $this->EE->view->cp_page_title = lang($lang_key);
+        } else {
+            $this->EE->cp->set_variable('cp_page_title', lang($lang_key));
+        }
+
 		$this->EE->cp->set_breadcrumb($this->base, lang('snippetssync_module_name'));
 
 		return $this->EE->load->view('_wrapper', $vars, TRUE);
