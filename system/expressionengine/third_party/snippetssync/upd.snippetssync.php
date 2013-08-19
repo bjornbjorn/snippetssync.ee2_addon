@@ -13,7 +13,7 @@
  */
 class Snippetssync_upd {
 
-	var $version        = '1.0.7';
+	var $version        = '1.0.8';
 	var $module_name = "Snippetssync";
 
     function Snippetssync_upd( $switch = TRUE )
@@ -77,7 +77,11 @@ class Snippetssync_upd {
 
 	function update($current = '')
 	{
-		return TRUE;
+        if ($current < '1.0.8') {
+            $this->EE->db->delete('extensions', array('class' => 'Snippetssync_ext', 'method' => 'on_cp_js_end'));
+        }
+
+        return TRUE;
 	}
 
     /** @return Devkit_code_completion_helper */ function EE() {if(!isset($this->EE)){$this->EE =& get_instance();}return $this->EE;}
