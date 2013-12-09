@@ -1,6 +1,11 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
-require_once PATH_THIRD.'libraries/ab/ab_libbase'.EXT;
+
+
+if(!class_exists('Ab_LibBase')) {
+    require_once PATH_THIRD.'snippetssync/libraries/ab/ab_libbase.php';
+}
+
 
 /**
  * EE Library - Functionality related to snippets / global variables
@@ -30,6 +35,12 @@ class Snippetslib extends Ab_LibBase {
 		$this->gv_path = $this->tmpl_basepath . ( $this->EE->config->slash_item('snippetssync_gv_folder') ? $this->EE->config->slash_item('snippetssync_gv_folder') : "global_variables/" );
 	}
 
+    private function log_error($msg)
+    {
+        $this->EE->load->library('logger');
+        $this->EE->logger->developer('SnippetsSync: '.$msg, TRUE);
+    }
+
 	public function verify_settings()
 	{
 		// checks if templates are saved as files.
@@ -51,28 +62,28 @@ class Snippetslib extends Ab_LibBase {
 		// check that parent dir is writeable.
 		if ( substr(sprintf('%o', fileperms( $this->tmpl_basepath )) , -4) < DIR_WRITE_MODE )
 		{
-			show_error( "Your template directory (".$this->tmpl_basepath.") needs to be writable." );
+			( "Your template directory (".$this->tmpl_basepath.") needs to be writable." );
 		}
 		
 		// check if the global_vars and snippets dirs exists, else create them now.
 		// check global vars dir
 		if ( !file_exists($this->gv_path) )
 		{
-			mkdir( $this->gv_path );
+			@mkdir( $this->gv_path );
 		}
 		if ( !$this->mk_perms( $this->gv_path ) )
 		{
-			show_error( "Could not make the global variables directory writeable." );
+			$this->log_error( "Could not make the global variables directory writeable." );
 		}
 		
 		// check snippets dir
 		if ( !file_exists($this->sn_path) )
 		{
-			mkdir( $this->sn_path );
+			@mkdir( $this->sn_path );
 		}
 		if ( !$this->mk_perms( $this->sn_path ) )
 		{
-			show_error( "Could not make the snippets directory writeable." );
+			$this->log_error( "Could not make the snippets directory writeable." );
 		}
 		
 		return TRUE;	// everything OK
@@ -204,7 +215,7 @@ class Snippetslib extends Ab_LibBase {
 		}
 		else
 		{
-			show_error("Could not open dir: " . $source_dir);
+			$this->log_error("Could not open dir: " . $source_dir);
 		}
 		return $files;
 	}
@@ -220,7 +231,7 @@ class Snippetslib extends Ab_LibBase {
 	{
 		clearstatcache();
 		
-		if ( substr(sprintf('%o', fileperms( $dir )), -4) != $perms )
+		if ( substr(sprintf('%o', @fileperms( $dir )), -4) != $perms )
 		{
 			@chmod( $dir , $perms );
 		}
