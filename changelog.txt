@@ -2,6 +2,10 @@ Changelog for SnippetsSync
 ==========================
 The dates in this changelog use international date format: YYYY-MM-DD (ISO8601)
 
+1.1 - 2013-12-09
+------------------
+* Moved libraries into snippetssync folder + use developer log for errors instead of show_error
+
 1.0.7 - 2013-05-20
 ------------------
 * Modified add-on folder structure for DevDemon Updater compatibility
