@@ -122,6 +122,7 @@ class Snippetslib extends Ab_LibBase {
                     if($this->EE->db->count_all_results() == 0)
                     {
                         $this->EE->db->insert('global_variables', array(
+                            'site_id' => $this->EE->config->item('site_id'),
                             'variable_name' => $global_variable_name,
                             'variable_data' => $global_variable_data,
                         ));
@@ -150,6 +151,7 @@ class Snippetslib extends Ab_LibBase {
                     if($this->EE->db->count_all_results() == 0)
                     {
                         $this->EE->db->insert('snippets', array(
+                            'site_id' => $this->EE->config->item('site_id'),
                             'snippet_name' => $snippet_name,
                             'snippet_contents' => $snippet_data,
                         ));
