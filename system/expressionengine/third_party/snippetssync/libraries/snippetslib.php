@@ -24,6 +24,8 @@ class Snippetslib extends Ab_LibBase {
 	private $sn_path = '';
 	private $gv_path = '';
 	private $tmpl_basepath = '';
+	private $sn_prefix = '';
+	private $gv_prefix = '';
 
 	public function __construct() {
 		
