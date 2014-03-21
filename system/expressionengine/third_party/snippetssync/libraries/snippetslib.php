@@ -88,6 +88,16 @@ class Snippetslib extends Ab_LibBase {
 			$this->log_error( "Could not make the snippets directory writeable." );
 		}
 		
+		//check for prefixes set on EECMS config.php
+		if ( is_string($this->EE->config->item('snippetssync_snippet_prefix'))  )
+		{
+			$this->sn_prefix = $this->EE->config->item('snippetssync_snippet_prefix');
+		}
+		if ( is_string($this->EE->config->item('snippetssync_global_variable_prefix'))  )
+		{
+			$this->gv_prefix = $this->EE->config->item('snippetssync_global_variable_prefix');
+		}
+
 		return TRUE;	// everything OK
 	}
 
