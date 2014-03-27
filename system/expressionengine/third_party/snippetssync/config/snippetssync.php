@@ -7,3 +7,7 @@
  * in addons-> modules -> snippetssync you can click to do a manual sync.
  */
 $config['snippetssync_production_mode'] = FALSE;
+$config['snippetssync_snippet_prefix'] = '';                    // for example: 'sn_'
+$config['snippetssync_global_variable_prefix'] = '';            // for example: 'gv_'
+
+// you can uncomment the above and put it in your master config if you prefer.
