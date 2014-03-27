@@ -13,22 +13,24 @@ if(!class_exists('Ab_LibBase')) {
  * Developer: Bjorn Borresen / AddonBakery
  * Date: 21.03.11
  * Time: 10:16
- *  
+ *
  */
- 
+
 class Snippetslib extends Ab_LibBase {
 
 	public $error_message = '';
 	public $last_sync_log = array();
-	
+
 	private $sn_path = '';
 	private $gv_path = '';
 	private $tmpl_basepath = '';
+	private $sn_prefix = '';
+	private $gv_prefix = '';
 
 	public function __construct() {
-		
+
 		parent::__construct();
-		
+
 		// setup the pathing to all required directories.
 		$this->tmpl_basepath = $this->EE->config->slash_item('tmpl_file_basepath') . $this->EE->config->slash_item('site_short_name');
 		$this->sn_path = $this->tmpl_basepath . ( $this->EE->config->slash_item('snippetssync_sn_folder') ? $this->EE->config->slash_item('snippetssync_sn_folder') : "snippets/" );
@@ -57,14 +59,14 @@ class Snippetslib extends Ab_LibBase {
 				return FALSE;
 			}
 		}
-		
-		
+
+
 		// check that parent dir is writeable.
 		if ( substr(sprintf('%o', fileperms( $this->tmpl_basepath )) , -4) < DIR_WRITE_MODE )
 		{
 			( "Your template directory (".$this->tmpl_basepath.") needs to be writable." );
 		}
-		
+
 		// check if the global_vars and snippets dirs exists, else create them now.
 		// check global vars dir
 		if ( !file_exists($this->gv_path) )
@@ -75,7 +77,7 @@ class Snippetslib extends Ab_LibBase {
 		{
 			$this->log_error( "Could not make the global variables directory writeable." );
 		}
-		
+
 		// check snippets dir
 		if ( !file_exists($this->sn_path) )
 		{
@@ -85,7 +87,17 @@ class Snippetslib extends Ab_LibBase {
 		{
 			$this->log_error( "Could not make the snippets directory writeable." );
 		}
-		
+
+		//check for prefixes set on EECMS config.php
+		if ( is_string($this->EE->config->item('snippetssync_snippet_prefix'))  )
+		{
+			$this->sn_prefix = $this->EE->config->item('snippetssync_snippet_prefix');
+		}
+		if ( is_string($this->EE->config->item('snippetssync_global_variable_prefix'))  )
+		{
+			$this->gv_prefix = $this->EE->config->item('snippetssync_global_variable_prefix');
+		}
+
 		return TRUE;	// everything OK
 	}
 
@@ -100,7 +112,7 @@ class Snippetslib extends Ab_LibBase {
 
 			$global_variables = $this->get_files($this->gv_path);
 			$snippets = $this->get_files($this->sn_path);
-			
+
 			// regex arrays, used to create valid snippet and global variable names.
 			$search = array(
 				"/\..*$/ui", //strips extension.
@@ -111,7 +123,7 @@ class Snippetslib extends Ab_LibBase {
 
 			foreach($global_variables as $global_variable_filename)
 			{
-				$global_variable_name = preg_replace( $search , $replace , $global_variable_filename );
+				$global_variable_name = $this->gv_prefix.preg_replace( $search , $replace , $global_variable_filename );
 
                 if($this->is_legal_global_var_name($global_variable_name)) {
                     $this->EE->db->where('variable_name', $global_variable_name);
@@ -141,7 +153,7 @@ class Snippetslib extends Ab_LibBase {
 
 			foreach($snippets as $snippet_filename)
 			{
-				$snippet_name = preg_replace( $search , $replace , $snippet_filename );
+				$snippet_name = $this->sn_prefix.preg_replace( $search , $replace , $snippet_filename );
 
                 if($this->is_legal_global_var_name($snippet_name)) {
                     $this->EE->db->where('snippet_name', $snippet_name);
@@ -225,14 +237,14 @@ class Snippetslib extends Ab_LibBase {
 	/**
 	 * Check permissions of dir/file for desired permissions.
 	 * If perms differ then set dir/file to desired perms.
-	 * 
+	 *
 	 * @param $dir
 	 * @param $perms (default: 0777)
 	 */
 	private function mk_perms( $dir , $perms = DIR_WRITE_MODE )
 	{
 		clearstatcache();
-		
+
 		if ( substr(sprintf('%o', @fileperms( $dir )), -4) != $perms )
 		{
 			@chmod( $dir , $perms );
@@ -240,8 +252,8 @@ class Snippetslib extends Ab_LibBase {
 		else {
 			return FALSE;
 		}
-		
+
 		return TRUE;
 	}
-	
+
 }
