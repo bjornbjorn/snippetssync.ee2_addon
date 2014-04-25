@@ -24,11 +24,18 @@ class Snippetssync_mcp
 		$this->EE =& get_instance();
 		$this->base	 	 = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module='.$this->module_name;
 		$this->form_base = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module='.$this->module_name;
-        $this->EE->load->config('snippetssync');
-	}
+
+        // load local config if none of these values aren't already specified in a master config
+        if(!isset($this->EE->config->config['snippetssync_production_mode'])
+            && !isset($this->EE->config->config['snippetssync_snippet_prefix'])
+            && !isset($this->EE->config->config['snippetssync_global_variable_prefix'])) {
+            $this->EE->load->config('snippetssync');
+        }
+    }
 
 	public function index()
 	{
+        // snippetssync_production_mode_override for backwards compatibility
 		$vars = array(
             'production_mode' => $this->EE->config->item('snippetssync_production_mode_override') || $this->EE->config->item('snippetssync_production_mode'),
         );
