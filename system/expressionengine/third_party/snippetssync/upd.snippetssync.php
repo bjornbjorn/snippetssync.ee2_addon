@@ -13,7 +13,7 @@
  */
 class Snippetssync_upd {
 
-	var $version        = '1.1.2';
+	var $version        = '1.1.3';
 	var $module_name = "Snippetssync";
 
     function Snippetssync_upd( $switch = TRUE )
