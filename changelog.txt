@@ -2,6 +2,14 @@ Changelog for SnippetsSync
 ==========================
 The dates in this changelog use international date format: YYYY-MM-DD (ISO8601)
 
+1.1.4 - 2014-08-06
+------------------
+* SnippetsSync donesn't check for 'save_tmpl_files' anymore. The reason for this is that one might not want to save templates as files on production, and still be able to have snippetssync installed and sync manually ((without it throwing an error) - see https://github.com/bjornbjorn/snippetssync.ee2_addon/issues/13
+
+1.1.3 - 2014-04-25
+------------------
+* Support for setting config vars in master config (local ones won't be used then)
+
 1.1.2 - 2014-03-27
 ------------------
 * Support for prefixing snippets / global variables (have a look in the config file)

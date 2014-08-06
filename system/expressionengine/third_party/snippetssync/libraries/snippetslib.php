@@ -45,21 +45,12 @@ class Snippetslib extends Ab_LibBase {
 
 	public function verify_settings()
 	{
-		// checks if templates are saved as files.
-		if($this->EE->config->item('save_tmpl_files') != 'y')
-		{
-			$this->error_message = 'Save templates as files must be set to Yes in Global Template Preferences';
-			return FALSE;
-		}
-		else
-		{
-			if(!($this->tmpl_basepath != $this->EE->config->slash_item('site_short_name') && file_exists($this->tmpl_basepath)))
-			{
-				$this->error_message = 'Template basepath not defined - or not found ('.$this->tmpl_basepath.')';
-				return FALSE;
-			}
-		}
 
+        if(!($this->tmpl_basepath != $this->EE->config->slash_item('site_short_name') && file_exists($this->tmpl_basepath)))
+        {
+            $this->error_message = 'Template basepath not defined - or not found ('.$this->tmpl_basepath.')';
+            return FALSE;
+        }
 
 		// check that parent dir is writeable.
 		if ( substr(sprintf('%o', fileperms( $this->tmpl_basepath )) , -4) < DIR_WRITE_MODE )
