@@ -236,7 +236,7 @@ class Snippetslib extends Ab_LibBase {
 	{
 		clearstatcache();
 
-		if ( substr(sprintf('%o', @fileperms( $dir )), -4) != $perms )
+        if ( octdec(substr(sprintf('%o', @fileperms( $dir )), -4)) < $perms )
 		{
 			@chmod( $dir , $perms );
 		}
