@@ -238,10 +238,14 @@ class Snippetslib extends Ab_LibBase {
 
         if ( octdec(substr(sprintf('%o', @fileperms( $dir )), -4)) < $perms )
 		{
-			@chmod( $dir , $perms );
-		}
-		else {
-			return FALSE;
+			if( chmod( $dir , $perms ) )
+			{
+				return TRUE;
+			}
+			else
+			{
+				return FALSE;
+			}
 		}
 
 		return TRUE;
