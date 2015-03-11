@@ -10,7 +10,7 @@ if(!class_exists('Ab_LibBase')) {
 /**
  * EE Library - Functionality related to snippets / global variables
  *
- * Developer: Bjorn Borresen / AddonBakery
+ * Developer: Bjorn Borresen / WDA
  * Date: 21.03.11
  * Time: 10:16
  *
@@ -236,9 +236,9 @@ class Snippetslib extends Ab_LibBase {
 	{
 		clearstatcache();
 
-        if ( octdec(substr(sprintf('%o', @fileperms( $dir )), -4)) < $perms )
+        if ( is_dir($dir) && octdec(substr(sprintf('%o', @fileperms( $dir )), -4)) < $perms )
 		{
-			if( chmod( $dir , $perms ) )
+			if( @chmod( $dir , $perms ) )
 			{
 				return TRUE;
 			}
