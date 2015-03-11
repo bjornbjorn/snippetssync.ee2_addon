@@ -2,6 +2,11 @@ Changelog for SnippetsSync
 ==========================
 The dates in this changelog use international date format: YYYY-MM-DD (ISO8601)
 
+1.2 - 2015-03-03
+------------------
+* Feature: Generate unique URL to run SnippetsSync over HTTP. Use case – post-deploy hook. Also returns JSON response via AJAX call. (@elliotlewis)
+* Bug fix: mk_perms, even on successful creation of folder, error logged in CP.
+
 1.1.4 - 2014-08-06
 ------------------
 * SnippetsSync donesn't check for 'save_tmpl_files' anymore. The reason for this is that one might not want to save templates as files on production, and still be able to have snippetssync installed and sync manually ((without it throwing an error) - see https://github.com/bjornbjorn/snippetssync.ee2_addon/issues/13

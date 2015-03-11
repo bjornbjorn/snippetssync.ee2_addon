@@ -13,7 +13,7 @@
  */
 class Snippetssync_upd {
 
-	var $version        = '1.1.4';
+	var $version        = '1.2';
 	var $module_name = "Snippetssync";
 
     function Snippetssync_upd( $switch = TRUE )
@@ -35,10 +35,11 @@ class Snippetssync_upd {
 		);
 
 		$this->EE->db->insert('modules', $data);
-
-		//
-		// Add additional stuff needed on module install here
-		//
+		
+		$this->EE->db->insert('actions', array(
+			'class'		=> $this->module_name,
+			'method'	=> 'url_sync'
+		));
 
 		return TRUE;
 	}
@@ -80,6 +81,14 @@ class Snippetssync_upd {
         if ($current < '1.0.8') {
             $this->EE->db->delete('extensions', array('class' => 'Snippetssync_ext', 'method' => 'on_cp_js_end'));
         }
+        
+        if ($current < '1.2')
+        {
+	        $this->EE->db->insert('actions', array(
+				'class'		=> $this->module_name,
+				'method'	=> 'url_sync'
+			));
+		}
 
         return TRUE;
 	}

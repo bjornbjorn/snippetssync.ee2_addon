@@ -35,9 +35,13 @@ class Snippetssync_mcp
 
 	public function index()
 	{
+		$snippetssync_sync_var = $this->EE->config->item('snippetssync_sync_var');
+		
         // snippetssync_production_mode_override for backwards compatibility
 		$vars = array(
-            'production_mode' => $this->EE->config->item('snippetssync_production_mode_override') || $this->EE->config->item('snippetssync_production_mode'),
+            'production_mode'	=> $this->EE->config->item('snippetssync_production_mode_override') || $this->EE->config->item('snippetssync_production_mode'),
+			'sync_var'			=> $snippetssync_sync_var,
+            'sync_url'			=> $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->cp->fetch_action_id($this->module_name, 'url_sync').'&sync='.$snippetssync_sync_var,
         );
 		return $this->content_wrapper('index', 'snippetssync_welcome', $vars);
 	}
