@@ -2,7 +2,7 @@ Changelog for SnippetsSync
 ==========================
 The dates in this changelog use international date format: YYYY-MM-DD (ISO8601)
 
-1.2 - 2015-03-03
+1.2 - 2015-03-11
 ------------------
 * Feature: Generate unique URL to run SnippetsSync over HTTP. Use case – post-deploy hook. Also returns JSON response via AJAX call. (@elliotlewis)
 * Bug fix: mk_perms, even on successful creation of folder, error logged in CP.
