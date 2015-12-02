@@ -213,7 +213,9 @@ class Snippetslib extends Ab_LibBase {
 			{
 				if (is_file($source_dir.$file))
 				{
-                    $files[] = $file;
+					if (strpos($file, '.') !== 0) {
+						$files[] = $file;
+					}
 				}
 			}
 			closedir($fp);
@@ -222,6 +224,7 @@ class Snippetslib extends Ab_LibBase {
 		{
 			$this->log_error("Could not open dir: " . $source_dir);
 		}
+
 		return $files;
 	}
 
